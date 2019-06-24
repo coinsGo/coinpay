@@ -7,13 +7,13 @@ const (
 )
 
 const (
-	CoinName_USDT string = "USDT"
-	CoinName_BTC  string = "BTC"
-	CoinName_ETH  string = "ETH"
+	CoinId_USDT int = 1
+	CoinId_BTC  int = 2
+	CoinId_ETH  int = 3
 )
 
-const (
-	CoinId_USDT uint32 = 1
-	CoinId_BTC  uint32 = 2
-	CoinId_ETH  uint32 = 3
-)
+var CoinName = map[int]string{
+	CoinId_USDT: "USDT",
+	CoinId_BTC:  "BTC",
+	CoinId_ETH:  "ETH",
+}

@@ -7,14 +7,17 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"io"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -84,7 +87,7 @@ func FormatTime(timestamp int, status int) (date string) {
 	return
 }
 
-// 通过map主键唯一的特性过滤重复元素
+//通过map主键唯一的特性过滤重复元素
 func RemoveRepByMap(slc []int) []int {
 	result := []int{}
 	tempMap := map[int]byte{} // 存放不重复主键
@@ -275,7 +278,7 @@ func CopyFile(dstName, srcName string) (written int64, err error) {
 	return io.Copy(dst, src)
 }
 
-//get请求
+//GET请求
 func HttpGet(url string) (res string, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -289,4 +292,19 @@ func HttpGet(url string) (res string, err error) {
 	}
 
 	return string(body), nil
+}
+
+//当前文件路径
+func CurrentFile() string {
+	_, file, _, ok := runtime.Caller(1)
+	if !ok {
+		panic(errors.New("Can not get current file info"))
+	}
+	return file
+}
+
+//当前绝对路径
+func CurrentDir() string {
+	file := CurrentFile()
+	return filepath.Dir(file)
 }

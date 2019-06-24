@@ -52,3 +52,14 @@ func GetAddressExist(coinId int, address string) bool {
 		return false
 	}
 }
+
+//查询
+func GetAddress(coinId int, address string) (result CoinAddress) {
+
+	defer Db.Close()
+	Db = Connect()
+	Db.Hander.Table("coin_address").
+		Where("coin_id = ? and address = ?", coinId, address).
+		First(&result)
+	return
+}
