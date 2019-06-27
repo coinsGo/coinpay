@@ -1,26 +1,27 @@
 package utils
 
 import (
-	"github.com/fanguanghui/coinpay/config"
-	"github.com/lestrrat/go-file-rotatelogs"
-	"github.com/pkg/errors"
-	"github.com/rifflock/lfshook"
-	"github.com/sirupsen/logrus"
 	"os"
 	"path"
 	"time"
+
+	"github.com/fanguanghui/coinpay/config"
+	rotatelogs "github.com/lestrrat/go-file-rotatelogs"
+	"github.com/pkg/errors"
+	"github.com/rifflock/lfshook"
+	"github.com/sirupsen/logrus"
 )
 
 var Log *logrus.Logger
 
-func init() {
+func Setup() {
 	Log = logrus.New()
 	//设置日志格式为json格式
 	Log.SetFormatter(&logrus.JSONFormatter{})
 	// 设置日志级别为info以上
 	Log.SetLevel(logrus.InfoLevel)
-	path, _ := os.Getwd()
-	logPath := path + "/" + config.Global.LogPath
+	basePath, _ := os.Getwd()
+	logPath := basePath + "/" + config.Global.LogPath
 	ConfigLocalFilesystemLogger(logPath, "std.log", time.Hour*24*7, time.Hour*24)
 }
 func ConfigLocalFilesystemLogger(logPath string, logFileName string, maxAge time.Duration, rotationTime time.Duration) {

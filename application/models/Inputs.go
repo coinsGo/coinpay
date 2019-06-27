@@ -5,47 +5,47 @@ import (
 )
 
 const (
-	InputStatus_Pending  int = 1
-	InputStatus_Complete int = 2
+	InputStatus_Pending  uint = 1
+	InputStatus_Complete uint = 2
+	InputStatus_Failure  uint = 3
 )
 
 type CoinInput struct {
-	Id          int     `gorm:"primary_key" json:"id"`
-	UserId      int     `json:"user_id"`
-	CoinId      int     `json:"coin_id"`
+	Id          uint    `gorm:"primary_key" json:"id"`
+	UserId      uint    `json:"user_id"`
+	CoinId      uint    `json:"coin_id"`
 	TxId        string  `json:"tx_id"`
 	TxAmount    float64 `json:"tx_amount"`
 	FromAddress string  `json:"from_address"`
 	ToAddress   string  `json:"to_address"`
-	Confirms    int     `json:"confirms"`
-	CollectId   int     `json:"collect_id"`
-	CreateTime  int     `json:"create_time"`
-	UpdateTime  int     `json:"update_time"`
-	Status      int     `json:"status"`
+	Confirms    uint64  `json:"confirms"`
+	CollectId   uint    `json:"collect_id"`
+	CreateTime  uint    `json:"create_time"`
+	UpdateTime  uint    `json:"update_time"`
+	Status      uint    `json:"status"`
 }
 
 type CoinInputCfm struct {
-	Confirms   int `json:"confirms"`
-	UpdateTime int `json:"update_time"`
-	Status     int `json:"status"`
+	Confirms   uint64 `json:"confirms"`
+	UpdateTime uint   `json:"update_time"`
+	Status     uint   `json:"status"`
 }
 
 //添加存币记录
-func InputSave(data map[string]interface{}, maxConfirm int) (insertId int) {
+func InputSave(data map[string]interface{}) (insertId uint) {
 
 	defer Db.Close()
 	Db = Connect()
 
-	ctime := int(time.Now().Unix())
-	confirms := data["confirms"].(int)
-	status := InputStatus_Pending
-	if maxConfirm > 0 && confirms >= maxConfirm {
-		status = InputStatus_Complete
-	}
+	coinId := data["coinId"].(uint)
+	confirms := data["confirms"].(uint64)
+	status := data["status"].(uint)
+	ctime := uint(time.Now().Unix())
+
 	info := &CoinInput{
 		0,
-		data["userId"].(int),
-		data["coinId"].(int),
+		data["userId"].(uint),
+		coinId,
 		data["txId"].(string),
 		data["txAmount"].(float64),
 		data["fromAddress"].(string),
@@ -63,22 +63,21 @@ func InputSave(data map[string]interface{}, maxConfirm int) (insertId int) {
 }
 
 //更新存币确认数状态
-func UpdateInputCfm(id, confirms, maxConfirm int) (result bool) {
+func UpdateInputCfm(data map[string]interface{}) (result bool) {
 
 	defer Db.Close()
 	Db = Connect()
 
-	utime := int(time.Now().Unix())
-	status := InputStatus_Pending
-	if maxConfirm > 0 && confirms >= maxConfirm {
-		status = InputStatus_Complete
-	}
-	data := &CoinInputCfm{
+	id := data["id"].(uint)
+	confirms := data["confirms"].(uint64)
+	status := data["status"].(uint)
+
+	info := &CoinInputCfm{
 		confirms,
-		utime,
+		uint(time.Now().Unix()),
 		status,
 	}
-	err := Db.Hander.Table("coin_inputs").Where("id = ?", id).Updates(data).Error
+	err := Db.Hander.Table("coin_inputs").Where("id = ?", id).Updates(info).Error
 	if err == nil {
 		result = true
 	}
@@ -86,7 +85,7 @@ func UpdateInputCfm(id, confirms, maxConfirm int) (result bool) {
 }
 
 //判断地址是否存在
-func GetInputExist(coinId int, txId string) bool {
+func GetInputExist(coinId uint, txId string) bool {
 
 	defer Db.Close()
 	Db = Connect()
@@ -94,7 +93,6 @@ func GetInputExist(coinId int, txId string) bool {
 	var count int
 	obj := Db.Hander.Table("coin_inputs").Where("coin_id = ? and tx_id = ?", coinId, txId)
 	obj.Count(&count)
-
 	if count > 0 {
 		return true
 	} else {
@@ -103,11 +101,26 @@ func GetInputExist(coinId int, txId string) bool {
 }
 
 //获取存币记录
-func GetPendingInputs() (result []CoinInput) {
+func GetPendingInputs(coinId uint) (result []CoinInput) {
 
 	defer Db.Close()
 	Db = Connect()
 
-	Db.Hander.Table("coin_inputs").Where("status = 1").Find(&result)
+	Db.Hander.Table("coin_inputs").Where("coin_id = ? and status = 1", coinId).Find(&result)
 	return
+}
+
+//计算存币记录状态
+func GetInputStatus(coinId uint, confirms uint64, valid bool) uint {
+	status := InputStatus_Pending
+	if !valid {
+		status = InputStatus_Failure
+	} else {
+		if CfgConfirms[coinId] > 0 {
+			if CfgConfirms[coinId] <= confirms {
+				status = InputStatus_Complete
+			}
+		}
+	}
+	return status
 }

@@ -5,56 +5,57 @@ import (
 )
 
 const (
-	OutputStatus_Waiting  int = 1
-	OutputStatus_Pending  int = 2
-	OutputStatus_Complete int = 3
+	OutputStatus_Waiting  uint = 1
+	OutputStatus_Pending  uint = 2
+	OutputStatus_Complete uint = 3
+	OutputStatus_Failure  uint = 4
 )
 
 type CoinOutput struct {
-	Id          int     `gorm:"primary_key" json:"id"`
-	SendId      int     `json:"send_id"`
-	UserId      int     `json:"user_id"`
-	CoinId      int     `json:"coin_id"`
-	TxId        string  `json:"tx_id"`
-	TxFee       float64 `json:"tx_fee"`
-	TxAmount    float64 `json:"tx_amount"`
-	PlatformFee float64 `json:"platform_fee"`
-	FromAddress string  `json:"from_address"`
-	ToAddress   string  `json:"to_address"`
-	Confirms    int     `json:"confirms"`
-	CreateTime  int     `json:"create_time"`
-	UpdateTime  int     `json:"update_time"`
-	Status      int     `json:"status"`
+	Id          uint   `gorm:"primary_key" json:"id"`
+	SendId      uint   `json:"send_id"`
+	UserId      uint   `json:"user_id"`
+	CoinId      uint   `json:"coin_id"`
+	TxId        string `json:"tx_id"`
+	TxFee       string `json:"tx_fee"`
+	TxAmount    string `json:"tx_amount"`
+	PlatformFee string `json:"platform_fee"`
+	FromAddress string `json:"from_address"`
+	ToAddress   string `json:"to_address"`
+	Confirms    uint   `json:"confirms"`
+	CreateTime  uint   `json:"create_time"`
+	UpdateTime  uint   `json:"update_time"`
+	Status      uint   `json:"status"`
 }
 
 type CoinOutputCfm struct {
-	Confirms   int `json:"confirms"`
-	UpdateTime int `json:"update_time"`
-	Status     int `json:"status"`
+	Confirms   uint `json:"confirms"`
+	UpdateTime uint `json:"update_time"`
+	Status     uint `json:"status"`
 }
 
 //添加申请提币记录
-func OutputApply(data map[string]interface{}) (insertId int) {
+func OutputApply(data map[string]interface{}) (insertId uint) {
 
 	defer Db.Close()
 	Db = Connect()
 
-	ctime := int(time.Now().Unix())
+	ctime := uint(time.Now().Unix())
 	info := &CoinOutput{
 		0,
-		data["sendId"].(int),
-		data["userId"].(int),
-		data["coinId"].(int),
+		data["sendId"].(uint),
+		data["userId"].(uint),
+		data["coinId"].(uint),
 		"",
-		data["txFee"].(float64),
-		data["txAmount"].(float64),
-		0.0,
+		data["txFee"].(string),
+		data["txAmount"].(string),
+		"0",
 		"",
 		data["toAddress"].(string),
 		0,
 		ctime,
 		ctime,
-		1,
+		OutputStatus_Waiting,
 	}
 	obj := Db.Hander.Table("coin_outputs").Create(info).Value
 	insertId = obj.(*CoinInput).Id
@@ -63,12 +64,12 @@ func OutputApply(data map[string]interface{}) (insertId int) {
 }
 
 //更新提币确认数状态
-func OutputUpdateTx(id, confirms, maxConfirm int) (result bool) {
+func OutputUpdateTx(id, confirms, maxConfirm uint) (result bool) {
 
 	defer Db.Close()
 	Db = Connect()
 
-	utime := int(time.Now().Unix())
+	utime := uint(time.Now().Unix())
 	status := InputStatus_Pending
 	if maxConfirm > 0 && confirms >= maxConfirm {
 		status = InputStatus_Complete
@@ -86,12 +87,12 @@ func OutputUpdateTx(id, confirms, maxConfirm int) (result bool) {
 }
 
 //更新提币确认数状态
-func OutputUpdateCfm(id, confirms, maxConfirm int) (result bool) {
+func OutputUpdateCfm(id, confirms, maxConfirm uint) (result bool) {
 
 	defer Db.Close()
 	Db = Connect()
 
-	utime := int(time.Now().Unix())
+	utime := uint(time.Now().Unix())
 	status := InputStatus_Pending
 	if maxConfirm > 0 && confirms >= maxConfirm {
 		status = InputStatus_Complete

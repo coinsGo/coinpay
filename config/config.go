@@ -1,9 +1,10 @@
 package config
 
 import (
+	"errors"
 	"log"
-
-	"github.com/fanguanghui/coinpay/application/common"
+	"path/filepath"
+	"runtime"
 
 	"github.com/go-ini/ini"
 )
@@ -34,7 +35,7 @@ var Envdata = &envdata{}
 
 func Setup(env string) {
 
-	file := common.CurrentDir() + "/config.ini"
+	file := currentDir() + "/config.ini"
 	cfg, err := ini.Load(file)
 	if err != nil {
 		log.Fatalf("config.Setup, fail to parse '"+file+"': %v", err)
@@ -48,4 +49,12 @@ func mapTo(cfg *ini.File, section string, v interface{}) {
 	if err != nil {
 		log.Fatalf("Cfg.MapTo RedisSetting err: %v", err)
 	}
+}
+
+func currentDir() string {
+	_, file, _, ok := runtime.Caller(1)
+	if !ok {
+		panic(errors.New("Can not get current file info"))
+	}
+	return filepath.Dir(file)
 }

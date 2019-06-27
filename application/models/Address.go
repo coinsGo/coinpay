@@ -5,40 +5,40 @@ import (
 )
 
 type CoinAddress struct {
-	Id         int     `gorm:"primary_key" json:"id"`
-	UserId     int     `json:"user_id"`
-	CoinId     int     `json:"coin_id"`
-	Address    string  `json:"address"`
-	Account    string  `json:"account"`
-	Balance    float32 `json:"balance"`
-	CreateTime int     `json:"create_time"`
-	UpdateTime int     `json:"update_time"`
+	Id         uint   `gorm:"primary_key" json:"id"`
+	UserId     uint   `json:"user_id"`
+	CoinId     uint   `json:"coin_id"`
+	Address    string `json:"address"`
+	Account    string `json:"account"`
+	Balance    string `json:"balance"`
+	CreateTime uint   `json:"create_time"`
+	UpdateTime uint   `json:"update_time"`
 }
 
 //添加钱包地址
-func AddressSave(data map[string]interface{}) (insertId int) {
+func AddressSave(data map[string]interface{}) (insertId uint) {
 
 	defer Db.Close()
 	Db = Connect()
-	time := int(time.Now().Unix())
+	time := uint(time.Now().Unix())
 	info := &CoinAddress{
 		0,
-		data["userId"].(int),
-		data["coinId"].(int),
+		data["userId"].(uint),
+		data["coinId"].(uint),
 		data["address"].(string),
 		data["account"].(string),
-		0,
+		"0",
 		time,
 		time,
 	}
 	obj := Db.Hander.Table("coin_address").Create(info).Value
-	insertId = obj.(*CoinAddress).Id
+	insertId = uint(obj.(*CoinAddress).Id)
 
 	return
 }
 
 //判断地址是否存在
-func GetAddressExist(coinId int, address string) bool {
+func GetAddressExist(coinId uint, address string) bool {
 
 	defer Db.Close()
 	Db = Connect()
@@ -54,7 +54,7 @@ func GetAddressExist(coinId int, address string) bool {
 }
 
 //查询
-func GetAddress(coinId int, address string) (result CoinAddress) {
+func GetAddress(coinId uint, address string) (result CoinAddress) {
 
 	defer Db.Close()
 	Db = Connect()
