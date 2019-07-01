@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/fanguanghui/coinapi/config"
-	"github.com/fanguanghui/coinpay/application/models"
+	"github.com/go-develop/coinapi/config"
+	"github.com/go-develop/coinpay/application/models"
 	"github.com/jinzhu/gorm"
 )
 

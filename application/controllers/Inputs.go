@@ -3,11 +3,11 @@ package controllers
 import (
 	"log"
 
-	"github.com/fanguanghui/coinpay/application/utils"
+	"github.com/go-develop/coinpay/application/utils"
 
-	"github.com/fanguanghui/coinapi/config"
-	"github.com/fanguanghui/coinpay/application/models"
-	"github.com/fanguanghui/coinpay/application/services"
+	"github.com/go-develop/coinapi/config"
+	"github.com/go-develop/coinpay/application/models"
+	"github.com/go-develop/coinpay/application/services"
 )
 
 //实时添加零确认记录

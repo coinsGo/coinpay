@@ -3,7 +3,7 @@ package test
 import (
 	"log"
 
-	"github.com/fanguanghui/coinpay/application/models"
+	"github.com/go-develop/coinpay/application/models"
 )
 
 func Inputs() {

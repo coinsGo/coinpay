@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/fanguanghui/coinapi/wallet"
+	"github.com/go-develop/coinapi/wallet"
 )
 
 var WalletFactory wallet.Factory

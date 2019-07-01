@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/fanguanghui/coinpay/application/utils"
-	"github.com/fanguanghui/coinpay/config"
+	"github.com/go-develop/coinpay/application/utils"
+	"github.com/go-develop/coinpay/config"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )

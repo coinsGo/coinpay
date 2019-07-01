@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/fanguanghui/coinpay/application/controllers"
-	"github.com/fanguanghui/coinpay/application/models"
-	"github.com/fanguanghui/coinpay/application/utils"
-	"github.com/fanguanghui/coinpay/config"
+	"github.com/go-develop/coinpay/application/controllers"
+	"github.com/go-develop/coinpay/application/models"
+	"github.com/go-develop/coinpay/application/utils"
+	"github.com/go-develop/coinpay/config"
 )
 
 func main() {

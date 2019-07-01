@@ -5,7 +5,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/fanguanghui/coinpay/config"
+	"github.com/go-develop/coinpay/config"
 	rotatelogs "github.com/lestrrat/go-file-rotatelogs"
 	"github.com/pkg/errors"
 	"github.com/rifflock/lfshook"
